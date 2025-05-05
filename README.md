@@ -46,5 +46,10 @@ Ce projet est un prototype pouvant être adapté en fonction des besoins spécif
 2.  Exécuter cette commande:    git clone https://github.com/ezzine-montassar/Charity_Data_Management_Interface
 3.  cd Charity_Data_Management_Interface
 4.  pip install -r requirements.txt
-5.  Ouvrez le fichier app.py en mode édition et adaptez l’adresse IP du serveur Flask selon vos besoins.
-6.  Lancez le serveur:  python app.py
+5.  Editez le fichier create_db.py pour l'adapter à vos exigences (Nom de la base, noms des tables, etc).
+6.  Créez la base de données:  python create_db.py
+7.  Ouvrez le fichier app.py en mode édition afin d’adapter l’adresse IP du serveur Flask ainsi que les noms de la base de données et des tables selon vos besoins.
+8.  Modifiez également les fichiers HTML si des changements sont apportés à la structure de la base (par exemple, la création de nouvelles tables).
+9.  Pour créer un nouvel utilisateur root, décommentez les lignes nécessaires dans le fichier login.html.
+10.  Lancez le serveur:  python app.py
+11.  Accédez à l’interface via l’adresse IP attribuée, en utilisant le port 5000 (ex. : http://192.168.1.1:5000).
