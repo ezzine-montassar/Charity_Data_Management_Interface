@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JCI RAFRAF - Interface de Gestion</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+</head>
+
+
+
+<body>
+
+
+<main>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul class="flash-messages">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <form id="logout_form" class="logout_button" method="post" action="/logout">
+        <button type="submit">Se déconnecter</button>
+    </form>
+
+    <div id="alert-popup" class="popup-overlay">
+        <div class="popup-content">
+            <p>
+                Veuillez choisir une fonctionnalité ci-dessous.
+                Le menu contient quatre options : l’affichage des données insérées,
+                l’ajout de nouvelles données, la modification des données existantes et leur suppression
+            </p>
+            <button onclick="closePopup()">D'accord</button>
+        </div>
+    </div>
+
+    <h1 class="slogan" >WARM HEARTS<br> BRIGHTER NIGHTS</h1>
+
+
+
+    <!-- Menu des options -->
+    <div class="menu" id="menu">
+        <div class="carre affichage" onclick="showSection('affichage')" action="/affichage">Affichage</div>
+        <div class="carre ajout" onclick="showSection('ajout')">Ajout</div>
+        <div class="carre suppression" onclick="showSection('suppression')">Suppression</div>
+        <div class="carre modification" onclick="showSection('modification')">Modification</div>
+    </div>
+
+    <!-- Section Affichage -->
+    <div id="affichage" class="content affichage-section">
+
+    <!-- Les filtres -->
+    <h2>🧒 Liste des enfants</h2>
+    {% if enfants %}
+        <div class="scrollable-table">
+            <table id="tableEnfants">
+               <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Sexe</th>
+                        <th>Adresse</th>
+                        <th>Handicapé</th>
+                        <th>Orphelin</th>
+                        <th>ID Parent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enfant in enfants %}
+                    <tr>
+                        <td>{{ enfant['id_enfant'] }}</td>
+                        <td>{{ enfant['nom'] }}</td>
+                        <td>{{ enfant['prenom'] }}</td>
+                        <td>{{ enfant['sexe'] }}</td>
+                        <td>{{ enfant['adresse'] }}</td>
+                        <td>{{ enfant['handicap'] }}</td>
+                        <td>{{ enfant['orphelin'] }}</td>
+                        <td>{{ enfant['id_parent'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+    <p>Aucun enfant trouvé.</p>
+    {% endif %}
+
+
+
+    <h2>👨 Liste des adultes</h2>
+    {% if majeurs %}
+        <div class="scrollable-table">
+            <table id="tableParents">
+               <thead>
+                    <tr>
+                       <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Sexe</th>
+                        <th>Adresse</th>
+                        <th>Téléphone</th>
+                        <th>Nombre d'enfants</th>
+                        <th>Statut travail</th>
+                        <th>Handicapé</th>
+                    </tr>
+               </thead>
+                <tbody>
+                    {% for majeur in majeurs %}
+                    <tr>
+                        <td>{{ majeur['id_majeur'] }}</td>
+                        <td>{{ majeur['nom'] }}</td>
+                        <td>{{ majeur['prenom'] }}</td>
+                        <td>{{ majeur['sexe'] }}</td>
+                        <td>{{ majeur['adresse'] }}</td>
+                        <td>{{ majeur['telephone'] }}</td>
+                        <td>{{ majeur['nombre_d_enfants'] }}</td>
+                        <td>{{ majeur['statut_travail'] }}</td>
+                        <td>{{ majeur['handicap'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      </div>
+    {% else %}
+    <p>Aucun adulte trouvé.</p>
+    {% endif %}
+
+
+    <div class="button-group">
+        <button class="button_retour" onclick="showMenu()">Retour</button>
+    </div>
+</div>
+
+
+    <!-- Section Ajout -->
+    <div id="ajout" class="content ajout-section">
+        <h1>Insertion de Données</h1>
+        <select class="button_select" id="Ajout-type" onchange="showFormAjout()">
+            <option value="majeur">Adulte</option>
+            <option value="enfant">Enfant</option>
+        </select>
+
+        <div id="majeurFormAjout" >
+            <form method="POST" class ="formulaire" action="/ajout/majeur">
+                <label>Nom:</label>
+                <input type="text" id="nommajeurAjout" name="nommajeurAjout" required maxlength="50"><br>
+                <label>Prénom:</label>
+                <input type="text" id="prenommajeurAjout" name="prenommajeurAjout" required maxlength="50"><br>
+                <label>Sexe:</label>
+                <select id="sexemajeurAjout" name="sexemajeurAjout" required>
+                    <option value="" disabled selected>-- Sélectionnez le sexe --</option>
+                    <option value="h">Homme</option>
+                    <option value="f">Femme</option>
+                </select><br>
+                <label >Adresse:</label>
+                <input type="text" id="adressemajeurAjout" name="adressemajeurAjout" required maxlength="255"><br>
+                <label>Téléphone:</label>
+                <input type="text" id="telephonemajeurAjout" name="telephonemajeurAjout" required maxlength="20"><br>
+                <label>Nombre d'enfants:</label>
+                <input type="number" id="nombre_d_enfantsmajeurAjout" name="nombre_d_enfantsmajeurAjout" required><br>
+                <label >Statut de travail:</label>
+                <select id="statut_travailmajeurAjout" name="statut_travailmajeurAjout" required>
+                    <option value="" disabled selected>-- Sélectionnez le statut du travail --</option>
+                    <option value="0">Sans emploi</option>
+                    <option value="1">Employé</option>
+                </select><br>
+                <label>Handicap:</label>
+                <select id="handicapmajeurAjout" name="handicapmajeurAjout" required>
+                    <option value="" disabled selected>-- Sélectionnez l'état du handicap --</option>
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                </select><br>
+                <input type="submit" value="Insérer Adulte">
+            </form>
+        </div>
+
+        <div id="enfantFormAjout" class="hidden">
+            <form method="POST" class="formulaire" action="/ajout/enfant">
+                <label>Nom:</label>
+                <input type="text" id="nomenfantAjout" name="nomenfantAjout" required maxlength="50"><br>
+                <label>Prénom:</label>
+                <input type="text" id="prenomenfantAjout" name="prenomenfantAjout" required maxlength="50"><br>
+                <label>Sexe:</label>
+                <select id="sexeenfantAjout" name="sexeenfantAjout" required>
+                    <option value="" disabled selected>-- Sélectionnez le sexe --</option>
+                    <option value="h">Homme</option>
+                    <option value="f">Femme</option>
+                </select><br>
+                <label>Adresse:</label>
+                <input type="text" id="adresseenfantAjout" name="adresseenfantAjout" required maxlength="255"><br>
+                <label>Handicap:</label>
+                <select id="handicapenfantAjout" name="handicapenfantAjout" required>
+                    <option value="" disabled selected>-- Sélectionnez l'état du handicap --</option>
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                </select><br>
+                <label>Orphelin:</label>
+                <select id="orphelinenfantAjout" name="orphelinenfantAjout" required>
+                    <option value="0">Non</option>
+                    <option value="1">Orphelin de père ou de mère</option>
+                    <option value="2">Orphelin des deux parents</option>
+                </select><br>
+                <label>ID Parent:</label>
+                <input type="text" id="id_parentenfantAjout" name="id_parentenfantAjout" required><br>
+
+                <input type="submit" value="Insérer Enfant">
+            </form>
+        </div>
+
+        <div class="button-group">
+            <button class="button_retour" onclick="showMenu()">Retour</button>
+        </div>
+    </div>
+
+
+
+
+
+
+    <!-- Section Suppression -->
+    <div id="suppression" class="content suppression-section">
+        <h1>Suppression de Données</h1>
+        <p class="paragraphe_suppression">La suppression se faite seulement par l'identifiant unique</p>
+        <form id="SuppressionForm" method="POST" class="formulaire" action="/supprimer">
+            <select id="type-suppression" name="type-suppression">
+                <option value="majeur">Adulte</option>
+                <option value="enfant">Enfant</option>
+            </select>
+            <label>ID:</label>
+            <input type="text" id="ID_Suppression" name="ID_Suppression" required maxlength="50"><br>
+            <input type="submit" value="Supprimer">
+            <div class="button-group">
+                <button class="button_retour" onclick="showMenu()">Retour</button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Confirmation de la Suppression -->
+    <script>
+        document.getElementById("SuppressionForm").addEventListener("submit", function(event) {
+            const type = document.getElementById("type-suppression").value;
+            const id = document.getElementById("ID_Suppression").value;
+            const confirmation = confirm(`Êtes-vous sûr de vouloir supprimer l'entrée de type "${type}" avec l'ID "${id}" ?`);
+            if (!confirmation) {
+                event.preventDefault(); // empêche l'envoi du formulaire
+            }
+        });
+    </script>
+
+
+
+
+
+    <!-- Section Modification -->
+    <div id="modification" class="content modification-section">
+        <h1>Modification Des données</h1>
+        <select class="button_select" id="modification-type" onchange="showFormModification()">
+            <option value="majeur">Adulte</option>
+            <option value="enfant">Enfant</option>
+        </select>
+
+
+        <!-- Formulaire Majeur -->
+        <div id="majeurFormModification" >
+            <form method="POST" class ="formulaire" action="/modification/majeur" onsubmit="return confirmerModification()">
+                <label>ID:</label>
+                <input type="text" id="IDmajeurModification" name="IDmajeurModification" required maxlength="50"><br>
+                <label>Nom:</label>
+                <input type="text" id="nommajeurModification" name="nommajeurModification"  maxlength="50"><br>
+                <label>Prénom:</label>
+                <input type="text" id="prenommajeurModification" name="prenommajeurModification" maxlength="50"><br>
+                <label>Sexe:</label>
+                <select id="sexemajeurModification" name="sexemajeurModification" >
+                    <option value="">-- Sélectionnez le sexe --</option>
+                    <option value="h">Homme</option>
+                    <option value="f">Femme</option>
+                </select><br>
+                <label >Adresse:</label>
+                <input type="text" id="adressemajeurModification" name="adressemajeurModification" maxlength="255"><br>
+                <label>Téléphone:</label>
+                <input type="text" id="telephonemajeurModification" name="telephonemajeurModification" maxlength="8"><br>
+                <label>Nombre d'enfants:</label>
+                <input type="number" id="nombre_d_enfantsmajeurModification" name="nombre_d_enfantsmajeurModification" ><br>
+                <label >Statut de travail:</label>
+                <select id="statut_travailmajeurModification" name="statut_travailmajeurModification" >
+                    <option value="" >-- Sélectionnez le statut du travail --</option>
+                    <option value="0">Sans emploi</option>
+                    <option value="1">Employé</option>
+                </select><br>
+                <label>Handicap:</label>
+                <select id="handicapmajeurModification" name="handicapmajeurModification" >
+                    <option value="" >-- Sélectionnez l'état du handicap --</option>
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                </select><br>
+                <input type="submit" value="Modifier">
+            </form>
+        </div>
+
+
+        <!-- Formulaire Enfant -->
+        <div id="enfantFormModification" class="hidden">
+            <form method="POST" class="formulaire" action="/modification/enfant" onsubmit="return confirmerModification()">
+                <label>ID:</label>
+                <input type="text" id="IDenfantModification" name="IDenfantModification" required maxlength="50"><br>
+                <label>Nom:</label>
+                <input type="text" id="nomenfantModification" name="nomenfantModification" maxlength="50"><br>
+                <label>Prénom:</label>
+                <input type="text" id="prenomenfantModification" name="prenomenfantModification"  maxlength="50"><br>
+                <label>Sexe:</label>
+                <select id="sexeenfantModification" name="sexeenfantModification" >
+                    <option value="">-- Sélectionnez le sexe --</option>
+                    <option value="h">Homme</option>
+                    <option value="f">Femme</option>
+                </select><br>
+                <label>Adresse:</label>
+                <input type="text" id="adresseenfantModification" name="adresseenfantModification"  maxlength="255"><br>
+                <label>Handicap:</label>
+                <select id="handicapenfantModification" name="handicapenfantModification" >
+                    <option value="" >-- Sélectionnez l'état du handicap --</option>
+                    <option value="0">Non</option>
+                    <option value="1">Oui</option>
+                </select><br>
+                <label>Orphelin:</label>
+                <select id="orphelinenfantModification" name="orphelinenfantModification">
+                    <option value="0">Non</option>
+                    <option value="1">Orphelin de père ou mère</option>
+                    <option value="2">Orphelin des deux parents</option>
+                </select><br>
+                <label>ID Parent:</label>
+                <input type="text" id="id_parentenfantModification" name="id_parentenfantModification"><br>
+
+                <input type="submit" value="Modifier">
+            </form>
+        </div>
+
+
+
+
+        <div class="button-group">
+            <button class="button_retour" onclick="showMenu()">Retour</button>
+        </div>
+    </div>
+
+
+</main>
+
+<footer>
+
+
+
+    <img src="{{ url_for('static', filename='logo_jci_blanc.png') }}" alt="Logo JCI" class="logo-transparent">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Mon image" class="image-bottom-right">
+
+    <p class="description">Cette plateforme a été développée dans le cadre d’un projet universitaire mené au sein de la prestigieuse école SUP'COM, dans le cadre du programme PACTE. Intitulé Heart Warming, ce projet vise à assurer une gestion efficace des données essentielles aux initiatives caritatives organisées par l’association JCI Rafraf.</p>
+    <img src="{{ url_for('static', filename='logo2.png') }}" alt="Mon image" class="image-bottom-left">
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
