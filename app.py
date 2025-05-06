@@ -15,11 +15,19 @@ def get_db_connection():
 
 @app.route("/", methods=["GET", "POST"])
 def login():
+    conn = get_db_connection()
+    user_count = conn.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+
+    # S'il n'y a aucun utilisateur, rediriger vers la page d'inscription
+    if user_count == 0:
+        conn.close()
+        return redirect(url_for("signup"))
+
+    # Sinon, traiter normalement le login
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
 
-        conn = get_db_connection()
         user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
         conn.close()
 
@@ -28,6 +36,9 @@ def login():
             return redirect(url_for("index"))
         else:
             flash("Nom d'utilisateur ou mot de passe incorrect")
+            # Pas de return ici, on continue pour afficher la page login
+
+    conn.close()
     return render_template("login.html")
 
 @app.route("/signup", methods=["GET", "POST"])
